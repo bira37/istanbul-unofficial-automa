@@ -1,4 +1,4 @@
-# Istanbul · Automa
+# [Istanbul · Automa](https://bira37.github.io/istanbul-unofficial-automa/)
 
 A web-based solo automa companion for **Istanbul** (Rüdiger Dorn / Pegasus Spiele), playable on any device directly in the browser — no installation required.
 
@@ -27,16 +27,15 @@ You can enable each expansion independently before starting a session.
 
 ## Implementation
 
-Built entirely with Claude (Anthropic). The interface, automa logic, card artwork and game flow were all implemented through a conversation-driven development process — from rules interpretation to the final polished UI.
+Built with the help of Claude AI, with some minor tweaks, especially the expansion cards, which can be slightly misaligned compared to the original ones from the author.
 
 ## How to Play
-
-1. Open `index.html` in any modern browser
+1. Access the app by clicking [here](https://bira37.github.io/istanbul-unofficial-automa/), or clone the project and open `index.html`
 2. Select which expansions are in play
 3. Set up the board normally according to Istanbul's rules
 4. Use the app to draw and resolve automa cards each turn
 
-No internet connection required after loading. Works on desktop, tablet and phone.
+No internet connection required after loading. Works on desktop, tablet and phone. Your game state is saved locally, so if you close the browser and come back later, everything will be right where you left it.
 
 ## License & Attribution
 
