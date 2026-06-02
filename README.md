@@ -1,8 +1,8 @@
 # [Istanbul · Automa](https://bira37.github.io/istanbul-unofficial-automa/)
 
-A web-based solo automa companion for **Istanbul** (Rüdiger Dorn / Pegasus
-Spiele), playable on any device directly in the browser — no installation
-required.
+A web-based solo **automa** companion for **Istanbul** (Rüdiger Dorn / Pegasus
+Spiele) — that also works as a standalone **board setup randomizer**. Playable
+on any device directly in the browser, no installation required.
 
 ## About
 
@@ -15,11 +15,16 @@ The automa simulates a competing merchant moving through the bazaar, collecting
 rubies and triggering location effects — giving you a meaningful solo challenge
 without heavy bookkeeping.
 
+It doesn't have to be solo, though: the built-in board randomizer can be used on
+its own to lay out a valid board, so it's handy for setting up a regular
+multiplayer game with friends too — no automa required.
+
 ## Features
 
 - Full automa logic for the base game and both expansions
 - **Board setup randomizer** — generates a valid Place-tile layout respecting
-  the official setup rules
+  the official setup rules; usable on its own for any 2+ player game, with no
+  automa involved
 - English / Portuguese interface toggle
 - Local autosave — close the tab and resume right where you left off
 - Fully offline after loading, on desktop, tablet or phone
@@ -64,6 +69,10 @@ of the base deck.
    depending on the expansions in play. You can reshuffle anytime, or lay the
    board out manually if you prefer.
 4. Use the app to draw and resolve automa cards each turn
+
+> **Just need a board?** From the start screen you can pick the expansions and
+> hit **"Randomize board"** to get a valid layout without starting an automa
+> game — perfect for a normal multiplayer session.
 
 No internet connection required after loading. Works on desktop, tablet and
 phone. Your game state is saved locally, so if you close the browser and come

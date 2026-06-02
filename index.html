@@ -350,6 +350,9 @@ details.rules .body p{margin:0 0 9px}
 
     <button class="btn primary block lg" id="buildBtn" data-i18n="setup_build">Montar baralho &amp; jogar</button>
 
+    <button class="btn block" id="boardSetupBtn" data-i18n="setup_random" style="margin-top:10px">🎲 Só randomizar o tabuleiro</button>
+    <div class="hint" data-i18n="setup_random_hint">Para montar uma partida (até com amigos, sem o Automa). Usa o modo selecionado acima como tamanho do tabuleiro.</div>
+
     <div class="credits">
       <div class="rules-credit" data-i18n-html="footer_rules"></div>
       <div class="dev" data-i18n-html="footer_dev"></div>
@@ -612,6 +615,7 @@ const L = {
   board_sub:'Disposição sorteada das peças ({d}). Monte o tabuleiro físico assim.',
   board_fountain:'Fonte (7)', board_bm:'Mercado Negro (8)', board_th:'Casa de Chá (9)',
   board_reroll:'🎲 Sortear de novo', board_close:'Fechar',
+  setup_random:'🎲 Só randomizar o tabuleiro', setup_random_hint:'Para montar uma partida (até com amigos, sem o Automa). Usa o modo selecionado acima como tamanho do tabuleiro.',
   diff:{veryeasy:'Muito Fácil', easy:'Fácil', medium:'Médio', hard:'Difícil', veryhard:'Muito Difícil'},
   secret:['Palácio do Sultão (13)','Vendedor de Pedras (16)','Casa de Café (20)'],
   footer_rules:'Baralho Automa não-oficial — baseado nas regras de <a href="https://boardgamegeek.com/profile/kamarashev" target="_blank" rel="noopener">@kamarashev</a> (BGG): <i>Istanbul – Solo Automa Deck (Unofficial)</i>.',
@@ -652,6 +656,7 @@ const L = {
   board_sub:'Randomized tile layout ({d}). Set up your physical board like this.',
   board_fountain:'Fountain (7)', board_bm:'Black Market (8)', board_th:'Tea House (9)',
   board_reroll:'🎲 Reshuffle', board_close:'Close',
+  setup_random:'🎲 Just randomize the board', setup_random_hint:'To set up a game (even with friends, no Automa). Uses the mode selected above as the board size.',
   diff:{veryeasy:'Very Easy', easy:'Easy', medium:'Medium', hard:'Hard', veryhard:'Very Hard'},
   secret:["Sultan's Palace (13)",'Gemstone Dealer (16)','Coffee House (20)'],
   footer_rules:'Unofficial Automa deck — based on the rules by <a href="https://boardgamegeek.com/profile/kamarashev" target="_blank" rel="noopener">@kamarashev</a> (BGG): <i>Istanbul – Solo Automa Deck (Unofficial)</i>.',
@@ -818,10 +823,10 @@ function buildBoard(mode){
   }
   return {grid:[[7]], rows:1, cols:1};
 }
+let BOARD=null, BOARD_MODE='base', BOARD_INGAME=false;
 function renderBoard(){
-  if(!S) return;
-  if(!S.board) S.board=buildBoard(S.mode);
-  const b=S.board, g=$('boardGrid');
+  if(!BOARD) return;
+  const b=BOARD, g=$('boardGrid');
   g.style.gridTemplateColumns='repeat('+b.cols+',1fr)';
   g.innerHTML='';
   for(let r=0;r<b.rows;r++)for(let c=0;c<b.cols;c++){
@@ -833,7 +838,21 @@ function renderBoard(){
   }
   $('boardSub').textContent = L[lang].board_sub.replace('{d}', b.cols+'×'+b.rows);
 }
-function openBoard(){ if(!S) return; renderBoard(); $('boardModal').classList.add('show'); }
+function openBoardGame(){            // tabuleiro do jogo de automa em andamento
+  if(!S) return;
+  if(!S.board) S.board=buildBoard(S.mode);
+  BOARD=S.board; BOARD_MODE=S.mode; BOARD_INGAME=true;
+  renderBoard(); $('boardModal').classList.add('show');
+}
+function openBoardSetup(){           // randomizer avulso (tela inicial, sem automa)
+  BOARD_MODE=selMode; BOARD=buildBoard(selMode); BOARD_INGAME=false;
+  renderBoard(); $('boardModal').classList.add('show');
+}
+function rerollBoard(){
+  BOARD=buildBoard(BOARD_MODE);
+  if(BOARD_INGAME && S){ S.board=BOARD; save(); }
+  renderBoard();
+}
 
 function sideSize(mode){ return MODES[mode].groups.reduce((s,g)=>s+g.length-1, 0); }
 function movCount(mode, diff, fine){
@@ -881,7 +900,7 @@ function newGame(mode, diff, fine, goal){
     secretDie: 0,      // 1..6 quando a última carta é Secret Society (0 = não)
     board: buildBoard(mode),  // disposição sorteada das peças
   };
-  save(); renderAll(); showGame(); openBoard();
+  save(); renderAll(); showGame(); openBoardGame();
 }
 
 function save(){ if(S) Store.set(SAVE_KEY, JSON.stringify(S)); }
@@ -1033,7 +1052,8 @@ function setLang(l){
   if(l!==lang){ lang=l; Store.set(LANG_KEY, l); }
   applyI18n();
   renderSetup();
-  if(S){ renderStatus(); renderRound(); if(S.board) renderBoard(); if(S.pos===0) showDeckBack(); else showCard(S.deck[S.pos-1], 0, false); }
+  if(S){ renderStatus(); renderRound(); if(S.pos===0) showDeckBack(); else showCard(S.deck[S.pos-1], 0, false); }
+  if(BOARD) renderBoard();
 }
 
 /* ---- dados ---- */
@@ -1113,8 +1133,9 @@ $('rollBtn').onclick = rollDice;
 $('secretReroll').onclick = ()=>{ if(!S)return; S.secretDie=1+randInt(6); save(); renderSecret(); };
 $('diceBtnTop').onclick = ()=>{ if(S){ document.querySelector('.wrap').scrollIntoView({behavior:'smooth'}); rollDice(); } };
 $('menuBtn').onclick = openMenu;
-$('boardBtn').onclick = openBoard;
-$('boardReroll').onclick = ()=>{ if(!S)return; S.board=buildBoard(S.mode); save(); renderBoard(); };
+$('boardBtn').onclick = openBoardGame;
+$('boardSetupBtn').onclick = openBoardSetup;
+$('boardReroll').onclick = rerollBoard;
 $('boardClose').onclick = ()=>$('boardModal').classList.remove('show');
 $('resumeBtn').onclick = showGame;
 $('newBtn').onclick = ()=>{ if(confirm(L[lang].confirm_new)){ Store.del(SAVE_KEY); renderSetup(); showSetup(); } };
